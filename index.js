@@ -142,5 +142,5 @@ document.getElementById("enableRotate").addEventListener("click", () => {
     .catch((e) => {
       console.error(e);
     });
-  enable();
+  // enable();
 });
