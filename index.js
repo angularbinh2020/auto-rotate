@@ -139,19 +139,17 @@ document.getElementById("enableRotate").addEventListener("click", () => {
         .then((response) => {
           if (response === "granted") {
             enableDeviceOrientation();
-            alert("Permission DeviceOrientationEvent success");
           } else {
-            alert("Permission DeviceOrientationEvent fail");
           }
         })
         .catch((e) => {
           console.error(e);
-          alert(JSON.stringify(e));
         });
     } else {
       enableDeviceOrientation();
     }
   } else {
-    alert("DeviceOrientationEvent missing");
   }
 });
+
+document.getElementById("enableRotate").click()
