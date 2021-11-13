@@ -1,0 +1,1331 @@
+﻿
+//Author: Quybv90
+//CreatedAt: 18/9/2021
+
+
+//--------------------Cấu hình socket----------------------
+const socker_url = "https://chat.mogivi.vn:5443";
+
+//--------------------Cấu hình firebase----------------------
+var firebaseConfig = {
+    apiKey: "AIzaSyAEujzq2V83rnvFjeO-WHcGntTacLxvxC0",
+    authDomain: "mogivi-4f1ff.firebaseapp.com",
+    databaseURL: "https://mogivi-4f1ff-default-rtdb.firebaseio.com",
+    projectId: "mogivi-4f1ff",
+    storageBucket: "mogivi-4f1ff.appspot.com",
+    messagingSenderId: "154624028257",
+    appId: "1:154624028257:web:c56f1966f920e290e14420",
+    measurementId: "G-BKZC21SWXR"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+var isMobile = false; //initiate as false
+// device detection
+if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)
+    || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0, 4))) {
+    isMobile = true;
+}
+
+let messaging = null;
+console.log("firebase.messaging.isSupported()", firebase.messaging.isSupported())
+if (firebase.messaging.isSupported()) {
+
+    messaging = firebase.messaging();
+
+    requestPermission(messaging);
+    messaging.onMessage(payload => {
+        console.log("onMessage", payload)
+    })
+    messaging.onTokenRefresh(() => {
+        //When the token is updated, onTokenRefresh is called.
+        messaging.getToken().then((refreshedToken) => {
+            localStorage.setItem("fcm_token", refreshedToken);
+        }).catch((err) => {
+        });
+    });
+}
+
+
+
+function requestPermission(messaging) {
+    Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+            messaging.getToken().then((currentToken) => {
+                if (currentToken) {
+                    localStorage.setItem("fcm_token", currentToken);
+                } else {
+                    // Show permission request.
+                    console.log('No Instance ID token available. Request permission to generate one.');
+                }
+            }).catch((err) => {
+                console.log('An error occurred while retrieving token. ', err);
+            });
+        } else {
+            console.log('Unable to get permission to notify.');
+        }
+    });
+    // [END request_permission]
+}
+
+
+//--------------------HẮNG SỐ----------------------
+
+var group_type = {
+    customer_broker: 1,
+    customer_support: 5,
+};
+var userType = {
+    customer: 1,
+    broker: 2,
+    support: 3
+}
+var avatar_default = "https://brokerdev.azureedge.net/icons/MogiviSupport/LOGO%20MOGIVI_130X130.png";
+
+const flags = {
+    CHAT_TWO: "CHAT_TWO",
+    RELOAD_USER: "RELOAD_USER",
+    LEAVE_GROUP: "LEAVE_GROUP",
+    SYNC_USER: "SYNC_USER",
+    ONLINE: "ONLINE",
+    OFFLINE: "OFFLINE",
+}
+
+//--------------------Kết nôi socket----------------------
+const socket = io(socker_url, {
+    transports: ['websocket']
+});
+
+socket.on("connect", () => {
+    if (socket.connected) {
+        syncUser();
+        const userInfo = onGetUserInfo();
+        if (userInfo == null) return;
+        totalUnReadMessage(userInfo.uid_redis);
+    }
+});
+
+socket.on("connect_error", () => {
+    setTimeout(() => {
+        socket.connect();
+    }, 1000);
+});
+
+socket.on("disconnect", (reason) => {
+    if (reason === "io server disconnect") {
+        socket.connect();
+    }
+});
+
+socket.io.on("reconnection_attempt", () => {
+    console.log("reconnection_attempt")
+});
+
+socket.io.on("reconnect", () => {
+    console.log("reconnect")
+});
+
+
+window.onfocus = function () {
+    const userInfo = onGetUserInfo();
+    if (userInfo == null) return;
+
+    //sync user
+    syncUser();
+
+    //load messages
+    const conversation_group_id = $("#currentChatId").val();
+    onGetCurrentConversation(conversation_group_id, userInfo.uid_redis);
+
+    //Load conversation
+    onGetListChat(userInfo.uid_redis);
+};
+
+var checkGetListFirst = 0;
+
+socket.on(flags.CHAT_TWO, function (data) {
+    if (data.conversation_group_id == $("#currentChatId").val()) {
+        const clientUserRedisId = $("#clientUserRedisId").val();
+
+        if (data.uid_redis === clientUserRedisId) {
+            const listMessage = $("#listMessage");
+            const currentChatList = $("#currentChatList");
+            let i = 0;
+            let imageDesktop = data.message.message != "" && data.message.files.length > 0 ? `<br/>` : '';
+            let imageMobile = data.message.message != "" && data.message.files.length > 0 ? `<br/>` : '';
+            for (const file of data.message.files) {
+                if (i > 1) {
+                    imageDesktop += `<br/>`;
+                    imageMobile += `<br/>`;
+                }
+                imageDesktop += `  <a href="${file.url}" data-lightbox="mogivi-desktop-${Date.now()}">
+                            <img src="${file.url}" style="width:100px;height:100px;object-fit: cover;" />
+                        </a>`;
+                imageMobile += `  <a  href="${file.url}" data-lightbox="mogivi-mobile-${Date.now()}">
+                            <img src="${file.url}" style="width:100px;height:100px;object-fit: cover;" />
+                        </a>`;
+
+            }
+            htmlMobile = `
+                            <div class='message-client' name >
+                                <div class="row no-gutters">
+                                    <div class="col-12">
+                                        <div class="pl-2">
+                                            <span>${data.message.message + imageMobile}</span>
+                                            <div><span class="datechat">${moment().format("hh:mm")}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+            htmlDesktop = `
+                            <div class="row row-receive ui-chatbox-msg">
+                                <div class="message">
+                                    <span class="iconbox">
+                                        <span class="spanmessage">
+                                            <span class="text-msg-detail">${data.message.message + imageDesktop}</span>
+                                            <div><span class="datechat">${moment().format("hh:mm")}</span></div>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+            listMessage.append(htmlMobile);
+            currentChatList.append(htmlDesktop);
+            try {
+                var beepsound = new Audio(window.location.origin + "/Scripts/chat/tingting2.m4a");
+                beepsound.play();
+
+            } catch (e) {
+                console.log(e);
+            }
+
+
+            const scrollMobile = document.getElementById("listMessage");
+            scrollMobile.scrollTop = scrollMobile.scrollHeight;
+
+            const scrollDesktop = document.getElementById("currentChatList");
+            scrollDesktop.scrollTop = scrollDesktop.scrollHeight;
+
+            let idHtml = data.uid_redis.replace(":", "");
+            $("#idstatus" + idHtml).removeClass("status offline").addClass("status online");
+
+            $("#idstatus1" + idHtml).removeClass("status offline").addClass("status online");
+
+            $("#idstatus2" + idHtml).removeClass("status offline").addClass("status online");
+
+            $("#lastmsg" + clientUserRedisId.replace(":", "")).html(data.message.files.length > 0 ? "Tệp tin" : data.message.message);
+            // idtime${ item.displayInfo.uid_redis.replace(":", "") }
+            //Hiển thị currnt hiện tại
+            if (!isMobile) {
+                $("#currentChat").removeClass("d-none");
+            }
+            onFocusMessage();
+
+        }
+    } else {
+
+
+
+        const userInfo = onGetUserInfo();
+        if (userInfo != null) {
+            if (($("#clientUserRedisId").val() == null || $("#clientUserRedisId").val() == "") && !isMobile) {
+                onGetCurrentConversation(data.conversation_group_id, userInfo.uid_redis)
+            }
+            onGetListChat(userInfo.uid_redis);
+        }
+    }
+});
+
+$("html").on("dragover", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+});
+
+$("html").on("drop", function (e) {
+    e.preventDefault(); e.stopPropagation();
+});
+
+//-------------------------------UPLOAD FILE-----------------------------------------
+$('#currentChatList').on('drop', function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $("#currentChatList").LoadingOverlay("show");
+    $("#listMessage").LoadingOverlay("show");
+
+    let images = [];
+    for (const file of e.originalEvent.dataTransfer.files) {
+
+        // get the next file that the user selected
+        var imageType = /image.*/;
+        // don't try to process non-images
+        if (!file.type.match(imageType)) {
+            continue;
+        }
+
+        var fileReader = new FileReader();
+        fileReader.onload = (function (file) {
+            return function (event) {
+                // Preview
+                images.push({ name: file.name, image: event.target.result.replace(/^data:image\/\w+;base64,/, ""), type: file.type });
+            };
+        })(file);
+        fileReader.readAsDataURL(file);
+    }
+    setTimeout(async () => {
+        //Lấy danh sách mô giới
+        if (images.length > 0)
+            $.ajax({
+                url: "/umbraco/api/ExportApi/UploadImages",
+                contentType: "application/json",
+                dataType: "json",
+                type: "POST",
+                data: JSON.stringify({ images }), //type=2 is broker
+                success: function (result) {
+                    onSendMessage("", result);
+                    $("#currentChatList").LoadingOverlay("hide");
+                    $("#listMessage").LoadingOverlay("hide");
+                }
+            });
+    }, 500);
+
+});
+
+document.getElementById('btnSendFile').addEventListener('click', openDialog);
+document.getElementById('btnSendFileMobile').addEventListener('click', openDialog);
+
+function openDialog() {
+    document.getElementById('files').click();
+}
+
+
+
+$('#files').change(function (e) {
+    var filedata = document.getElementById("files"),
+        formdata = false;
+    if (window.FormData) {
+        formdata = new FormData();
+    }
+    $("#currentChatList").LoadingOverlay("show");
+    $("#listMessage").LoadingOverlay("show");
+    var i = 0, len = filedata.files.length, img, reader, file;
+    let images = [];
+    for (; i < len; i++) {
+        file = filedata.files[i];
+        // get the next file that the user selected
+        var imageType = /image.*/;
+        // don't try to process non-images
+        if (!file.type.match(imageType)) {
+            continue;
+        }
+        if (window.FileReader) {
+            reader = new FileReader();
+            reader.onloadend = function (e) {
+                images.push({ name: file.name, image: e.target.result.replace(/^data:image\/\w+;base64,/, ""), type: file.type });
+            };
+            reader.readAsDataURL(file);
+        }
+        if (formdata) {
+            formdata.append("file", file);
+        }
+    }
+    setTimeout(async () => {
+        //Lấy danh sách mô giới
+        if (images.length > 0)
+            $.ajax({
+                url: "/umbraco/api/ExportApi/UploadImages",
+                contentType: "application/json",
+                dataType: "json",
+                type: "POST",
+                data: JSON.stringify({ images }), //type=2 is broker
+                success: function (result) {
+                    onSendMessage("", result);
+                    $("#currentChatList").LoadingOverlay("hide");
+                    $("#listMessage").LoadingOverlay("hide");
+                }
+            });
+    }, 500);
+});
+
+socket.on(flags.OFFLINE, function (data) {
+    //console.log("ONLINE", data, "#" + data.uid_redis + "-status");
+    const clientUserRedisId = $("#clientUserRedisId").val();
+    let idHtml = data.uid_redis.replace(":", "");
+    $("#idstatus" + idHtml).removeClass("status online").addClass("status offline");
+    $("#idstatus1" + idHtml).removeClass("status online").addClass("status offline");
+    $("#idstatus2" + idHtml).removeClass("status online").addClass("status offline");
+    if (clientUserRedisId == data.uid_redis) {
+        $("#headerUserInfoStatus").removeClass("status online").addClass("status offline");
+        $("#headerUserInfoStatusDesktop").removeClass("status online").addClass("status offline");
+    }
+});
+
+socket.on(flags.ONLINE, function (data) {
+    //console.log("ONLINE", data, "#" + data.uid_redis + "-status");
+    const clientUserRedisId = $("#clientUserRedisId").val();
+    if (data.uid_redis != null) {
+        let idHtml = data.uid_redis.replace(":", "");
+        $("#idstatus" + idHtml).removeClass("status offline").addClass("status online");
+
+        $("#idstatus1" + idHtml).removeClass("status offline").addClass("status online");
+
+        $("#idstatus2" + idHtml).removeClass("status offline").addClass("status online");
+        if (clientUserRedisId == data.uid_redis) {
+            $("#headerUserInfoStatus").removeClass("status offline").addClass("status online");
+            $("#headerUserInfoStatusDesktop").removeClass("status offline").addClass("status online");
+        }
+    }
+
+
+});
+
+socket.on(flags.RELOAD_USER, function (data) {
+    console.log("Cập nhật lại user, người nhận vừa online")
+});
+
+//Sự kiện rời khỏi nhóm chat
+socket.on(flags.LEAVE_GROUP, function (data) {
+
+});
+
+function syncUser() {
+    let userInfo = onGetUserInfo();
+    if (userInfo != null) {
+        userInfo.fcm_token = localStorage.getItem("fcm_token") ? localStorage.getItem("fcm_token") : "";
+        socket.emit(flags.SYNC_USER, userInfo);
+    }
+}
+
+function totalUnReadMessage(uid_redis) {
+    try {
+        $.ajax({
+            url: '/umbraco/api/ExportApi/TotalUnReadMessage',
+            contentType: "application/json",
+            dataType: "json",
+            type: "POST",
+            data: JSON.stringify({ uid_redis }),
+            success: function (result) {
+                // console.log("totalUnReadMessage", result);
+                if (result != null && result.success === true) {
+                    if (parseFloat(result.data) > 0) {
+                        $("#totalUnread").removeClass("d-none");
+                        $("#totalUnread").html(result.data.toString());
+                    }
+
+                }
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+
+function syncUserOrChatWith(userInfo, isSysncUser = true, callback = null) {
+    try {
+
+        $.ajax({
+            url: isSysncUser ? '/umbraco/api/ExportApi/Sync' : "/umbraco/api/ExportApi/ChatWith",
+            contentType: "application/json",
+            dataType: "json",
+            type: "POST",
+            data: JSON.stringify(userInfo),
+            success: function (result) {
+                if (result.success === true) {
+                    //cập nhật lại uid_redis
+                    //lưu vào localstoreage
+                    $("#currentChatId").val(result.data.conversation_group_id);
+                    if (!isSysncUser && callback != null) {
+                        let userSave = {
+                            phone: userInfo.phone,
+                            email: userInfo.email,
+                            uid: userInfo.uid,
+                            uid_redis: result.data.created_by, //sau khi login xong phải update lại ID này
+                            full_name: userInfo.full_name,
+                            display_name: userInfo.display_name,
+                            avatar: userInfo.avatar,
+                            address: userInfo.address,
+                            type: userInfo.type,//1 khách hàng  2 broker   3 support
+                            platform: userInfo.platform,//nền tảng đến từ đâu 1. web  2 android  3 ios
+                        };
+                        localStorage.setItem("CustomerInfo", JSON.stringify(userSave));
+                        callback(result.data);
+
+                    } else if (callback != null) {
+                        callback(null);
+                    }
+                } else {
+                    if (callback != null) {
+                        callback(null);
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+function onGetUserInfo() {
+    try {
+        let userInfo = localStorage.getItem("CustomerInfo");
+        if (userInfo != null) {
+            userInfo = JSON.parse(userInfo);
+            return userInfo;
+        }
+        return null;
+    } catch (e) {
+        return null;
+    };
+};
+
+function onFocusMessage() {
+    const conversation_group_id = $("#currentChatId").val();
+    let userInfo = localStorage.getItem("CustomerInfo");
+    if (userInfo != null && conversation_group_id != null && conversation_group_id != "") {
+        userInfo = JSON.parse(userInfo);
+        const newMessage = {
+            id: socket.id,
+            uid_redis: userInfo.uid_redis,
+            display_name: userInfo.display_name,
+            avatar: avatar_default,
+            full_name: userInfo.full_name,
+            phone: userInfo.phone,
+            email: userInfo.email,
+            type: 1,//Chú ý chỗ này  //1 khách hàng  2 broker   3 support
+            category: 10,
+            conversation_group_id: conversation_group_id,
+            message: { message: "", files: [] },
+            sender: { uid_redis: userInfo.uid_redis, uid: userInfo.uid, type: userType.customer, un_read: 0 },
+            receivers: [
+                { uid_redis: $("#clientUserRedisId").val(), uid: $("#clientUserChatId").val(), type: userType.broker, un_read: 1 }
+            ]
+        }
+        socket.emit("ACTIVE_SCREEN_CHAT", newMessage);
+
+        let unreadMessage = $("#idtime" + $("#clientUserRedisId").val().replace(":", "")).html();
+
+        let totalUnreadMessage = $("#totalUnread").html();
+
+        $("#idtime" + $("#clientUserRedisId").val().replace(":", "")).html(0);
+        totalUnreadMessage = parseFloat(totalUnreadMessage) - parseFloat(unreadMessage);
+        $("#totalUnread").html(totalUnreadMessage);
+        if (totalUnreadMessage <= 0) {
+            $("#totalUnread").addClass("d-none");
+        }
+        $("#idtime" + $("#clientUserRedisId").val().replace(":", "")).addClass("d-none");
+    }
+
+};
+
+
+//--- Khách thoát chat với môi giới
+function onOutChat(conversation_group_id, uid, uid_redis) {
+
+    $("#conversationGroupIdOutChat").val(conversation_group_id);
+    $("#uidOutChat").val(uid);
+    $("#uidRedisOutChat").val(uid_redis);
+    $("#modalConfirmOutChat").modal('show');
+};
+
+function onConfirmOutChat() {
+    const conversation_group_id = $("#conversationGroupIdOutChat").val();
+    if (conversation_group_id != "" && conversation_group_id != null) {
+        let userInfo = localStorage.getItem("CustomerInfo");
+        if (userInfo != null) {
+            userInfo = JSON.parse(userInfo);
+            const newMessage = {
+                id: socket.id,
+                uid_redis: userInfo.uid_redis,
+                display_name: userInfo.display_name,
+                avatar: avatar_default,
+                full_name: userInfo.full_name,
+                phone: userInfo.phone,
+                email: userInfo.email,
+                category: 10,
+                type: 1,//Chú ý chỗ này  //1 khách hàng  2 broker   3 support
+                conversation_group_id: conversation_group_id,
+                message: { message: "", files: [] },
+                sender: { uid_redis: userInfo.uid_redis, uid: userInfo.uid, type: userType.customer, un_read: 0 },
+                receivers: [
+                    { uid_redis: $("#uidRedisOutChat").val(), uid: $("#uidOutChat").val(), type: userType.broker, un_read: 1 }
+                ]
+            };
+            socket.emit(flags.LEAVE_GROUP, newMessage);
+            if ($("#currentChatId").val() === conversation_group_id) {
+                MinimizebuttonChat();
+            };
+            //Cap nhat lai danh sach chat
+            setTimeout(() => {
+                onGetListChat(userInfo.uid_redis);
+                $("#modalConfirmOutChat").modal('hide');
+            }, 200);
+        }
+    }
+};
+
+function getConversationGroup(uid_redis, callback) {
+    //Lấy danh sách mô giới
+    $.ajax({
+        url: "/umbraco/api/ExportApi/GetAllConversationGroup",
+        contentType: "application/json",
+        dataType: "json",
+        type: "POST",
+        data: JSON.stringify({
+            limit: 100,
+            page: 1,
+            uid_redis: uid_redis,
+            group_type: group_type.customer_broker,
+            type: userType.customer
+        }), //type=2 is broker
+        success: function (result) {
+            if (result.success === true) {
+                callback(result.data);
+
+                const totalCount = parseFloat(result.totalUnReadMessage);
+                if (totalCount > 0) {
+                    $("#totalUnread").removeClass("d-none");
+                    $("#totalUnread").text(totalCount > 9 ? '9+' : totalCount);
+                } else {
+                    $("#totalUnread").removeClass("d-none").addClass("d-none");
+                };
+
+
+            } else {
+                callback([]);
+                console.log("DDax cos loi xay ra");
+            }
+        }
+    });
+}
+
+function getConversation(conversation_group_id, uid_redis, callback) {
+
+    //Lấy danh sách mô giới
+    $.ajax({
+        url: "/umbraco/api/ExportApi/GetAllConversation",
+        contentType: "application/json",
+        dataType: "json",
+        type: "POST",
+        data: JSON.stringify({
+            limit: 300,
+            page: 1,
+            conversation_group_id: conversation_group_id,
+            order_by: 'asc',
+            uid_redis,
+            loadmore: true
+        }), //type=2 is broker
+        success: function (result) {
+            if (result.success === true) {
+                if (result.more != null) {
+                    $("#currentChatId").val(conversation_group_id)
+                    $("#clientUserChatName").val(result.more.displayInfo.display_name);
+                    $("#clientUserChatAvatar").val(result.more.displayInfo.avatar);
+                    $("#clientUserChatEmail").val(result.more.displayInfo.email);
+                    $("#clientUserChatPhoneNumber").val(result.more.displayInfo.phone);
+                    $("#clientUserChatId").val(result.more.displayInfo.uid);
+                    $("#clientUserRedisId").val(result.more.displayInfo.uid_redis);
+                    $("#clientUserOnline").val(result.more.displayInfo.is_online);
+                }
+                callback(result.data);
+            } else {
+                callback([]);
+                console.log("DDax cos loi xay ra");
+            }
+        }
+    });
+}
+
+//--- Lấy thông tin conversation
+function onGetCurrentConversation(conversation_group_id, uid_redis) {
+    if (!conversation_group_id) return;
+    const listMessage = $("#listMessage");
+    const currentChatList = $("#currentChatList");
+    $("#currentChatId").val(conversation_group_id)
+    getConversation(conversation_group_id, uid_redis, (chatMessages) => {
+        checkGetListFirst = 0;
+        listMessage.html("");
+        currentChatList.html("");
+        for (const chatMessage of chatMessages) {
+            let htmlMobile = '';
+            let htmlDesktop = '';
+            const clientUserRedisId = $("#clientUserRedisId").val();
+
+            let i = 0;
+            let imageDesktop = chatMessage.text != "" && chatMessage.files.length > 0 ? `<br/>` : '';
+            let imageMobile = chatMessage.text != "" && chatMessage.files.length > 0 ? `<br/>` : '';
+            for (const file of chatMessage.files) {
+                i++;
+                if (i > 1) {
+                    //  imageDesktop += `<br/>`;
+                    //   imageMobile += `<br/>`;
+                }
+                imageDesktop += `  <a  href="${file.url}" data-lightbox="mogivi-desktop-${chatMessage.createdAt}">
+                            <img src="${file.url}" style="width:100px;height:100px;object-fit: cover;" />
+                            </a>`;
+                imageMobile += `  <a  href="${file.url}" data-lightbox="mogivi-mobile-${chatMessage.createdAt}">
+                            <img src="${file.url}" style="width:100px;height:100px;object-fit: cover;" />
+                            </a>`;
+            }
+            if (chatMessage.user._id === clientUserRedisId) {
+
+
+                htmlMobile = `
+                            <div class='message-client' name >
+                                <div class="row no-gutters">
+                                    <div class="col-12">
+                                        <div class="pl-2">
+                                            <span>${chatMessage.text + imageMobile}</span>
+                                            <div><span class="datechat">${moment(chatMessage.createdAt).format("hh:mm")}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                htmlDesktop = `
+                            <div class="row row-receive ui-chatbox-msg">
+                                <div class="message">
+                                    <span class="iconbox">
+                                        <span class="spanmessage">
+                                            <span class="text-msg-detail">${chatMessage.text + imageDesktop}</span>
+                                            <div><span class="datechat">${moment(chatMessage.createdAt).format("hh:mm")}</span></div>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+            } else {
+                htmlMobile = `
+                            <div class='message-without-client'>
+                                <span>${chatMessage.text + imageMobile}</span>
+                                <div><span class="datechat">${moment(chatMessage.createdAt).format("hh:mm")}</span></div>
+                            </div>
+                        `;
+
+                htmlDesktop = `
+                            <div class="row row-send ui-chatbox-msg">
+                                <div class="message">
+                                    <span class="iconbox">
+                                        <span class="spanmessage">
+                                            <span class="text-msg-detail">${chatMessage.text + imageDesktop}</span>
+                                            <div><span class="datechat">${moment(chatMessage.createdAt).format("HH:mm")}</span></div>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+            };
+
+            listMessage.append(htmlMobile);
+            currentChatList.append(htmlDesktop);
+        };
+        onShowMessage();
+        const scrollMobile = document.getElementById("listMessage");
+        scrollMobile.scrollTop = scrollMobile.scrollHeight;
+
+        const scrollDesktop = document.getElementById("currentChatList");
+        scrollDesktop.scrollTop = scrollDesktop.scrollHeight;
+    });
+};
+
+//--- Lấy thông tin danh sách conversation
+function onGetListChat(uid_redis) {
+
+    const listChat = $("#listChat");
+    const listChatDesktop = $("#chat_box ul");
+    getConversationGroup(uid_redis, (rows) => {
+        listChat.html("");
+        listChatDesktop.html("");
+        rows.forEach((item, index) => {
+            let checkMemberInfo = item?.member_list?.find(c => c.uid_redis == uid_redis);
+            const cureentViewMobile = $(`#${item.conversation_group_id.replace(":", "")}-mobile`);
+            const htmlMobile = `<li id="${item.conversation_group_id.replace(":", "")}-mobile" class="list-group-item position-relative" >
+                                                                    <div class="row ml-n1 mr-n1" onclick='onGetCurrentConversation("${item.conversation_group_id}","${uid_redis}")'>
+                                                                        <div class="col-2 pl-1 pr-1">
+                                                                            <div class="img-avatar">
+                                                                                <span class="font-weight-bold count-unread d-none">${checkMemberInfo.un_read}</span>
+                                                                                <picture>
+                                                                                    <source media="(max-width:768px)" data-srcset="${item.displayInfo.avatar}" />
+                                                                                    <img class="img-fluid lazyload" data-src="${item.displayInfo.avatar}" alt="${item.displayInfo.display_name}" title="${item.displayInfo.display_name}" width="80" />
+                                                                                </picture>
+                                                                                <span id="idstatus${item.displayInfo.uid_redis.replace(":", "")}" class="status ${item.displayInfo.is_online == true ? 'online' : item.displayInfo.is_online == false ? 'offline' : 'd-none'}"></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-8 pl-1 pr-1">
+                                                                            <div class="mogivi-broker-info pl-1">
+                                                                                <h6 class="text-uppercase">
+                                                                                    ${item.displayInfo.display_name}
+                                                                                </h6>
+                                                                                <span class="last-message">${item.last_message_sent}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-2 pl-1 pr-1">
+                                                                            <div class="message-timestamp">
+                                                                                <span class="${checkMemberInfo.un_read > 0 ? '' : 'd-none'}">${checkMemberInfo.un_read > 9 ? '9+' : checkMemberInfo.un_read}</span>
+                                                                            </div>
+                                                                         
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="btn-out-chat" onclick='onOutChat("${item.conversation_group_id}","${item.displayInfo.uid}","${item.displayInfo.uid_redis}")'>X</div>
+                                                                </li>`;
+
+            if (cureentViewMobile) {
+                cureentViewMobile.remove();
+                listChat.append(htmlMobile);
+            } else {
+                listChat.append(htmlMobile);
+            }
+            $("#listChatEmpty").removeClass("d-none").addClass("d-none");
+
+            const cureentViewDesktop = $(`#${item.conversation_group_id.replace(":", "")}-desktop`);
+            const htmlDesktop = `<li id="${item.conversation_group_id.replace(":", "")}-desktop"  class="position-relative">
+                                                                    <a  onclick='onGetCurrentConversation("${item.conversation_group_id}","${uid_redis}")'>
+                                                                        <div class="avatar" style="background: url('${item.displayInfo.avatar}')">
+                                                                            <span id="idstatus1${item.displayInfo.uid_redis.replace(":", "")}"  class="status ${item.displayInfo.is_online == true ? 'online' : item.displayInfo.is_online == false ? 'offline' : 'd-none'}"></span>
+                                                                        </div>
+                                                                        <div class="info">
+                                                                            <div class="name">${item.displayInfo.display_name}</div>
+                                                                            <div id="lastmsg${item.displayInfo.uid_redis.replace(":", "")}" class="last-msg">${item.last_message_sent}</div>
+                                                                        </div>
+                                                                        <div id="idtime${item.displayInfo.uid_redis.replace(":", "")}" class="time ${checkMemberInfo.un_read > 0 ? '' : 'd-none'}">${checkMemberInfo.un_read > 9 ? '9+' : checkMemberInfo.un_read}</div>
+                                                                     </a>
+                                                                        <div class="btn-out-chat-desktop btnOutChat"   conversation_group_id="${item.conversation_group_id}"  onclick='onOutChat("${item.conversation_group_id}","${item.displayInfo.uid}","${item.displayInfo.uid_redis}")'>X</div>
+
+                                                                </li>`;
+
+            if (cureentViewDesktop) {
+                cureentViewDesktop.remove();
+                listChatDesktop.append(htmlDesktop);
+            } else {
+                listChatDesktop.append(htmlDesktop);
+            };
+        });
+    });
+
+};
+
+//--- Gửi tin nhắn
+function onSendMessage(message, files = []) {
+    if (message == "" && files.length == 0) {
+        return;
+    }
+    checkGetListFirst++;
+    const listMessage = $("#listMessage");
+    const currentChatList = $("#currentChatList");
+    const userInfo = onGetUserInfo();
+    if (userInfo == null) return;
+    const params = {
+        id: socket.id,
+        uid_redis: userInfo.uid_redis,
+        display_name: userInfo.display_name,
+        phone: userInfo.phone,
+        email: userInfo.email,
+        category: 10,
+        type: userInfo.type,//Chú ý chỗ này
+        conversation_group_id: $("#currentChatId").val(),
+        group_type: group_type.customer_broker,
+        message: { message, files },
+        sender: { uid_redis: userInfo.uid_redis, uid: userInfo.uid, type: userInfo.type, status: 1, un_read: 0 },
+        receivers: [
+            { uid_redis: $("#clientUserRedisId").val(), uid: $("#clientUserChatId").val(), type: userType.broker, status: 1, un_read: 1 }
+        ]
+    };
+    socket.emit("CHAT_TWO", params);
+    let i = 0;
+    let imageDesktop = params.message.message != "" && params.message.files.length > 0 ? `<br/>` : '';
+    let imageMobile = params.message.message != "" && params.message.files.length > 0 ? `<br/>` : '';
+
+
+    for (const file of params.message.files) {
+        //if (i > 1) {
+        //    imageDesktop += `<br/>`;
+        //    imageMobile += `<br/>`;
+        //}
+        imageDesktop += `  <a href="${file.url}" data-lightbox="mogivi-desktop-${Date.now()}">
+                            <img src="${file.url}" style="width:100px;height:100px;object-fit: cover;" />
+                        </a>`;
+        imageMobile += `  <a  href="${file.url}" data-lightbox="mogivi-mobile-${Date.now()}">
+                            <img src="${file.url}" style="width:100px;height:100px;object-fit: cover;" />
+                        </a>`;
+
+    }
+
+
+    let htmlMobile = `
+                            <div class='message-without-client'>
+                                <span>${message + imageMobile}</span>
+                                <div><span class="datechat">${moment().format("hh:mm")}</span></div>
+                            </div>
+                        `;
+
+    let htmlDesktop = `
+                            <div class="row row-send ui-chatbox-msg">
+                                <div class="message">
+                                    <span class="iconbox">
+                                        <span class="spanmessage">
+                                            <span class="text-msg-detail">${message + imageDesktop}</span>
+                                            <div><span class="datechat">${moment().format("HH:mm")}</span></div>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+    listMessage.append(htmlMobile);
+    currentChatList.append(htmlDesktop);
+    const scrollMobile = document.getElementById("listMessage");
+    scrollMobile.scrollTop = scrollMobile.scrollHeight;
+
+    listMessage.scrollTop(listMessage.prop('scrollHeight'));
+
+    const scrollDesktop = document.getElementById("currentChatList");
+    scrollDesktop.scrollTop = scrollDesktop.scrollHeight;
+
+    $("#lastmsg" + $("#clientUserRedisId").val().replace(":", "")).html(files.length > 0 ? "Tệp tin" : message);
+    $("#messageValue").val('');
+    $("#messageValueDesktop").val('');
+    if (checkGetListFirst == 1) {
+        onGetListChat(userInfo.uid_redis);
+    }
+};
+
+//--- Tạo mới hoặc mở lại conversation
+function onCreateOrOpenMessage(project = "", new_group_type = group_type.customer_broker) {
+
+
+
+    const userInfo = onGetUserInfo();
+    const clientUserChatId = $("#clientUserChatId").val();
+
+
+    if (!userInfo) {
+        onShowFirstChat();
+        $("#listMessageCreateFirstMessage").html("");
+        $("#listMessageCreateFirstMessageDesktop").html("");
+
+        const htmlMobile = `
+                <div class='message-client'>
+                    <div class="row no-gutters">
+                        <div class="col-2">
+                            <picture>
+                                 <source media="(max-width:768px)" data-srcset="${$("#clientUserChatAvatar").val()}" />
+                                <img class="img-fluid lazyload" data-src="${$("#clientUserChatAvatar").val()}" alt="${$("#clientUserChatName").val()}" title="${$("#clientUserChatName").val()}" width="80" />
+                            </picture>
+                        </div>
+                        <div class="col-10">
+                            <div class="pl-2">
+                                <span>Chào mừng anh/chị đến với Mogivi. Em có thể hỗ trợ gì được anh/chị không ạ?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        const htmlDesktop = `
+                <div class='message-client'>
+                    <div class="row no-gutters">
+                        <div class="col-3">
+                            <picture>
+                                 <source media="(max-width:768px)" data-srcset="${$("#clientUserChatAvatar").val()}" />
+                                <img class="img-fluid lazyload" data-src="${$("#clientUserChatAvatar").val()}" alt="${$("#clientUserChatName").val()}" title="${$("#clientUserChatName").val()}" width="80" />
+                            </picture>
+                        </div>
+                        <div class="col-9">
+                            <div class="pl-1">
+                                <span>Chào mừng anh/chị đến với Mogivi. Em có thể hỗ trợ gì được anh/chị không ạ?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        $("#listMessageCreateFirstMessage").append(htmlMobile);
+        $("#listMessageCreateFirstMessageDesktop").append(htmlDesktop);
+    } else {
+        $("#currentChatList").html("");
+        const listMessage = $("#listMessage");
+        const currentChatList = $("#currentChatList");
+        const projectName = project == "" ? $("#titleProject").text() : project;
+        let message = `Chào ${$("#clientUserChatName").val()}, bạn có thế cung cấp cho tôi về dự án ${projectName.trim()} không?`;
+        if (group_type == group_type.customer_support) {
+            message = `Chào đội ngũ Mogivi, bạn có thế cung cấp cho tôi về dự án ${projectName.trim()} không?`;
+        }
+        let htmlMobile = `
+                            <div class='message-without-client'>
+                                <span>${message}</span>
+                                <div><span class="datechat">${moment().format("hh:mm")}</span></div>
+                            </div>
+                        `;
+
+        let htmlDesktop = `
+                            <div class="row row-send ui-chatbox-msg">
+                                <div class="message">
+                                    <span class="iconbox">
+                                        <span class="spanmessage">
+                                            <span class="text-msg-detail">${message}</span>
+                                            <div><span class="datechat">${moment().format("HH:mm")}</span></div>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+
+        listMessage.append(htmlMobile);
+        currentChatList.append(htmlDesktop);
+        const scrollMobile = document.getElementById("listMessage");
+        scrollMobile.scrollTop = scrollMobile.scrollHeight;
+
+        const scrollDesktop = document.getElementById("currentChatList");
+        scrollDesktop.scrollTop = scrollDesktop.scrollHeight;
+
+        $("#currentChatId").val("");
+        onShowMessage();
+
+
+        onCheckUserExists(message, project, new_group_type);
+    }
+};
+function convertProjectName(name) {
+    return name.length > 20 ? name.substring(0, 20) + " ..." : name;
+}
+function onCheckUserExists(message = "", project = "", new_group_type = group_type.customer_broker) {
+
+
+
+
+    let formCreateUserInfoUserName = $("#formCreateUserInfoUserName").val();
+    let formCreateUserInfoPhone = $("#formCreateUserInfoPhone").val();
+
+    if (/Android|iPhone/i.test(navigator.userAgent)) {
+        formCreateUserInfoUserName = $("#formCreateUserInfoUserName").val();
+        formCreateUserInfoPhone = $("#formCreateUserInfoPhone").val();
+    } else {
+        formCreateUserInfoUserName = $("#formCreateUserInfoUserNameDesktop").val();
+        formCreateUserInfoPhone = $("#formCreateUserInfoPhoneDesktop").val();
+    };
+    const projectName = project == "" ? $("#titleProject").text() : project;
+    if (message == "") {
+        message = `Chào ${$("#clientUserChatName").val()}, bạn có thế cung cấp cho tôi về dự án ${projectName.trim()} không?`;
+    }
+    let userInfo = onGetUserInfo();
+
+    let params = {
+        address: "",
+        avatar: avatar_default,
+        display_name: formCreateUserInfoUserName ? formCreateUserInfoUserName : userInfo.display_name,
+        email: "",
+        full_name: formCreateUserInfoUserName ? formCreateUserInfoUserName : userInfo.display_name,
+        group_name: "",
+        group_type: new_group_type,
+        message: {
+            files: [],
+            message
+        },
+        notification_data: {
+            PostId: ""
+        },
+        phone: formCreateUserInfoPhone ? formCreateUserInfoPhone : userInfo.phone,
+        platform: 1,
+        project_name: convertProjectName(projectName),
+        receivers: [
+            {
+                avatar: $("#clientUserChatAvatar").val(),
+                display_name: $("#clientUserChatName").val(),
+                email: $("#clientUserChatEmail").val(),
+                full_name: $("#clientUserChatName").val(),
+                phone: $("#clientUserChatPhoneNumber").val(),
+                type: userType.broker,//chat với broker
+                uid: $("#clientUserChatId").val(),
+                uid_redis: $("#clientUserRedisId").val(),
+            }
+        ],
+        fcm_token: localStorage.getItem("fcm_token") ? localStorage.getItem("fcm_token") : "",
+        type: userType.customer,
+        uid: formCreateUserInfoPhone ? formCreateUserInfoPhone : userInfo.phone,
+        uid_redis: userInfo ? userInfo.uid_redis : "",
+        category: 10,
+    };
+    if (new_group_type == group_type.customer_support) {
+        params.conversation_group_id = "";//cấu từ từ API yêu cầu group truyền lên là ""
+    }
+
+    console.log('params', params);
+    syncUserOrChatWith(params, false, (data) => {
+        syncUser();
+        if (data != null) {
+            //  console.log("params", params, data);
+            params.conversation_group_id = data.conversation_group_id;
+            params.uid_redis = data.created_by;
+            onGetCurrentConversation(params.conversation_group_id, data.created_by);
+
+            userInfo = onGetUserInfo();
+            onGetListChat(userInfo.uid_redis);
+            totalUnReadMessage(userInfo.uid_redis);
+        }
+        socket.emit("UPDATE_CONVERSATON_GROUP", params);
+    });
+    $("#viewCreateFirstMessage").addClass("d-none");
+    $("#viewCreateFirstMessageDesktop").addClass("d-none");
+    $("#viewListMessage").removeClass("d-none");
+
+};
+
+function onCheckUserFromStorage() {
+    const userInfo = onGetUserInfo();
+    $("#btnShowModalChat").removeClass("d-none");
+    //if (userInfo) {
+    //    $("#btnShowModalChat").removeClass("d-none");
+    //} else {
+    //    $("#btnShowModalChat").removeClass("d-none").addClass("d-none");
+    //}
+};
+
+function onShowMessage() {
+    if (/Android|iPhone/i.test(navigator.userAgent)) {
+        $("#modalChatTab").modal('show');
+    } else {
+        $("#currentChat").removeClass("d-none");
+        $("#modalBrokerMogiviList").modal('hide');
+        if ($("#ListMember").hasClass("d-none")) {
+            $("#currentChat").css("right", "20px");
+        } else {
+            $("#currentChat").css("right", "350px");
+        }
+    };
+
+    $("#btnChatMobile").removeClass("btnActive btnInActive").addClass("btnActive");
+    $("#btnChatListMobile").removeClass("btnActive btnInActive").addClass("btnInActive");
+    $("#viewListChat").removeClass("d-none").addClass("d-none");
+    $("#viewListMessage").removeClass("d-none");
+    $("#viewCreateFirstMessage").removeClass("d-none").addClass("d-none");
+    $("#viewCreateFirstMessageDesktop").removeClass("d-none").addClass("d-none");
+    $("#btnBackToChatList").removeClass("d-none");
+    $("#formCurrentChatDesktop").removeClass("d-none");
+    $("#headerUserInfo .img-avatar").removeClass("d-none");
+
+    onCheckUserFromStorage();
+    var userDisplayName = $("#clientUserChatName").val();
+    if (userDisplayName) {
+        onSetModalTitle(userDisplayName);
+        $("#modalMessagePhone").removeClass("d-none");
+        $("#modalMessagePhone").text($("#clientUserChatPhoneNumber").val());
+        $("#headerAvatarUser").attr("src", $("#clientUserChatAvatar").val());
+
+        $("#currentChat .popup-title .profile-info .info .mobile").text($("#clientUserChatPhoneNumber").val());
+        $("#currentChat .popup-title .profile-info .info .name span").text(userDisplayName);
+        document.getElementById("currentChatProfileAvatarDesktop").style.background = "url('" + $("#clientUserChatAvatar").val() + "')";
+
+        if ($("#clientUserOnline").val() == 'false') {
+            $("#headerUserInfoStatus").removeClass("status online").addClass("status offline");
+            $("#headerUserInfoStatusDesktop").removeClass("status online").addClass("status offline");
+        }
+        else if ($("#clientUserOnline").val() == 'true') {
+            $("#headerUserInfoStatus").removeClass("status offline").addClass("status online");
+            $("#headerUserInfoStatusDesktop").removeClass("status offline").addClass("status online");
+        }
+        //kichs hoatj trang thai la da doc tin
+        onFocusMessage();
+    } else {
+        onSetModalTitle("Tin nhắn");
+    };
+};
+
+function onShowFirstChat() {
+    onShowMessage();
+    $("#viewListMessage").removeClass("d-none").addClass("d-none");
+    $("#formCurrentChatDesktop").removeClass("d-none").addClass("d-none");
+    $("#viewCreateFirstMessage").removeClass("d-none");
+    $("#viewCreateFirstMessageDesktop").removeClass("d-none");
+};
+
+function Minimizebutton() {
+    $("#ListMember").removeClass("d-none").addClass("d-none");
+    $("#currentChat").css("right", "20px");
+};
+
+function MinimizebuttonChat() {
+    $("#currentChat").removeClass("d-none").addClass("d-none");
+    $("#currentChatId").val("")
+    $("#clientUserChatName").val("")
+    $("#clientUserChatAvatar").val("")
+    $("#clientUserChatEmail").val("")
+    $("#clientUserChatPhoneNumber").val("")
+    $("#clientUserChatId").val("")
+    $("#clientUserRedisId").val("")
+    $("#clientUserOnline").val("")
+};
+
+function onShowChatList() {
+    if (/Android|iPhone/i.test(navigator.userAgent)) {
+        $("#modalChatTab").modal('show');
+    } else {
+        if ($("#ListMember").hasClass("d-none")) {
+            $("#ListMember").removeClass("d-none");
+        } else {
+            $("#ListMember").removeClass("d-none").addClass("d-none");
+        }
+        if ($("#ListMember").hasClass("d-none")) {
+            $("#currentChat").css("right", "20px");
+        } else {
+            $("#currentChat").css("right", "350px");
+        }
+    };
+
+    $("#btnChatMobile").removeClass("btnActive btnInActive").addClass("btnInActive");
+    $("#btnChatListMobile").removeClass("btnActive btnInActive").addClass("btnActive");
+    $("#viewListChat").removeClass("d-none");
+    $("#viewListMessage").removeClass("d-none").addClass("d-none");
+    $("#viewCreateFirstMessage").removeClass("d-none").addClass("d-none");
+    $("#viewCreateFirstMessageDesktop").removeClass("d-none").addClass("d-none");
+    $("#btnBackToChatList").removeClass("d-none").addClass("d-none");
+    $("#headerUserInfo .img-avatar").removeClass("d-none").addClass("d-none");
+
+    onSetModalTitle("Danh sách tin nhắn");
+    onCheckUserFromStorage();
+    $("#modalMessagePhone").removeClass("d-none").addClass("d-none");
+    $("#modalMessagePhone").text('');
+
+    const userInfo = onGetUserInfo();
+    if (userInfo) {
+        onGetListChat(userInfo.uid_redis);
+    };
+};
+
+function onSetModalTitle(text) {
+    $("#modalMessageTitle").text(text);
+};
+
+function setHeightListMessage() {
+    $("#modalChatTab #viewListMessage #listMessage").height($("#modalChatTab").outerHeight() - 150);
+};
+
+$(document).ready(function () {
+
+    //--- Validation.js
+    if (validation) {
+        validation.init();
+    };
+
+    $('#chat_box ul').bind('DOMSubtreeModified', function () {
+        if ($('#chat_box ul li').length === 0) {
+            if ($('#chat_box ul p') && $('#chat_box ul p').length === 0) {
+                $('#chat_box ul').append(`<p class="h-100 text-center mb-0 pt-3">Không có tin nhắn</p>`);
+            };
+        } else {
+            $('#chat_box ul p').remove();
+        };
+    });
+
+    //--- Get thông tin khách từ storage
+    onCheckUserFromStorage();
+
+    //--- Hiển thị danh sách chat
+    $("#btnShowModalChat").click(function () {
+        //const userInfo = onGetUserInfo();
+        //if (userInfo) {
+        //    onShowChatList();
+        //};
+        onShowChatList();
+    });
+
+    //--- Trở về danh sách chat
+    $("#btnBackToChatList").click(function () {
+        onShowChatList();
+    });
+
+    $("#btnSendFirstMessageValue").click(function () {
+        if (!$("#firstMessageValue").val()) return;
+        $("#formCreateMessage").addClass("d-none");
+        $("#formCreateMessageDesktop").addClass("d-none");
+        $("#formCreateUserInfo").removeClass("d-none");
+    });
+
+    $("#btnSendFirstMessageValueDesktop").click(function () {
+        if (!$("#firstMessageValueDesktop").val()) return;
+        $("#formCreateMessage").addClass("d-none");
+        $("#formCreateMessageDesktop").addClass("d-none");
+        $("#formCreateUserInfoDesktop").removeClass("d-none");
+    });
+
+    //--- Form submit thông tin khách hàng trên mobile
+    $('#formCreateUserInfo').submit(function (e) {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+        var $form = $(this);
+        if ($form.valid()) {
+            let firstMessageValue = $("#firstMessageValue").val();
+            if (/Android|iPhone/i.test(navigator.userAgent)) {
+                firstMessageValue = $("#firstMessageValue").val();
+            } else {
+                firstMessageValue = $("#firstMessageValueDesktop").val();
+            };
+
+            onCheckUserExists(firstMessageValue);
+        }
+    });
+
+    //--- Form submit thông tin khách hàng trên desktop
+    $('#formCreateUserInfoDesktop').submit(function (e) {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+        var $form = $(this);
+        if ($form.valid()) {
+            let firstMessageValue = $("#firstMessageValue").val();
+            if (/Android|iPhone/i.test(navigator.userAgent)) {
+                firstMessageValue = $("#firstMessageValue").val();
+            } else {
+                firstMessageValue = $("#firstMessageValueDesktop").val();
+            };
+
+            onCheckUserExists(firstMessageValue);
+        }
+    });
+
+    //--- Gửi tin nhắn trên mobile
+    $("#btnSendMessageValue").click(function () {
+        const messageValue = $("#messageValue").val();
+        onSendMessage(messageValue);
+    });
+
+    //--- Gửi tin nhắn trên desktop
+    $("#btnSendMessageValueDesktop").click(function () {
+        const messageValue = $("#messageValueDesktop").val();
+        onSendMessage(messageValue);
+    });
+
+    $('#messageValue').on('keypress', function (e) {
+
+        if (e.which === 13) {
+            e.preventDefault();
+            e.stopPropagation();
+            const messageValue = $("#messageValue").val();
+            onSendMessage(messageValue);
+        }
+    });
+
+    $('#messageValueDesktop').on('keypress', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            e.stopPropagation();
+            const messageValue = $("#messageValueDesktop").val();
+            onSendMessage(messageValue);
+        }
+    });
+
+    $("#btnClose").click(function () {
+        MinimizebuttonChat();
+    });
+
+    $("#aChatWWithSupport").click(function () {
+        $("#clientUserRedisId").val("");
+        $("#clientUserChatId").val("");
+        $("#clientUserChatName").val("Đội ngũ hỗ trợ Mogivi");
+        $("#clientUserChatEmail").val("");
+        $("#clientUserChatPhoneNumber").val("");
+        $("#clientUserChatAvatar").val(avatar_default);
+        $("#clientUserOnline").val(true);
+
+        onCreateOrOpenMessage($("#titleProject").html(), group_type.customer_support);
+    });
+});

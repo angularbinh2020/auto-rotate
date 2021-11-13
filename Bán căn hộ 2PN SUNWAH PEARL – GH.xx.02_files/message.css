@@ -1,0 +1,358 @@
+﻿#totalUnread {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 25px;
+  height: 25px;
+  background-color: #ff4e00;
+  text-align: center;
+  font-size: 12px;
+  border-radius: 50%;
+  line-height: 25px;
+  border: 1px solid #ffffff; }
+
+.sectionUserChat {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  z-index: 1; }
+  .sectionUserChat .btnInActive {
+    border: 1px solid #ff4e00;
+    color: #ff4e00;
+    background-color: #ffffff;
+    text-transform: uppercase;
+    width: 100%;
+    font-size: 12px;
+    margin: 0 5px;
+    font-weight: bold; }
+    .sectionUserChat .btnInActive i {
+      margin-right: 3px; }
+  .sectionUserChat .btnActive {
+    border: 0;
+    color: #fff;
+    background-color: #ff4e00;
+    text-transform: uppercase;
+    width: 100%;
+    font-size: 12px;
+    font-weight: bold; }
+    .sectionUserChat .btnActive i {
+      margin-right: 3px; }
+
+#modalChatTab .modal-header {
+  align-items: center; }
+  #modalChatTab .modal-header #btnBackToChatList {
+    border: 0;
+    background-color: transparent;
+    font-size: 16px;
+    margin-right: 5px; }
+  #modalChatTab .modal-header .img-avatar {
+    position: relative;
+    float: left; }
+    #modalChatTab .modal-header .img-avatar span.count-unread {
+      position: absolute;
+      right: 0px;
+      top: -5px;
+      background-color: #ff4e00;
+      color: #ffffff;
+      border-radius: 4px;
+      padding: 0px 5px; }
+    #modalChatTab .modal-header .img-avatar img {
+      border-radius: 50%;
+      border: 1px solid #ff4e00;
+      height: 50px;
+      width: 50px;
+      object-fit: cover; }
+    #modalChatTab .modal-header .img-avatar span.status {
+      width: 18px;
+      height: 18px;
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      border-radius: 50%;
+      border: 1px solid #fff; }
+      #modalChatTab .modal-header .img-avatar span.status.offline {
+        background-color: #cccccc; }
+      #modalChatTab .modal-header .img-avatar span.status.online {
+        background-color: #04be5b; }
+  #modalChatTab .modal-header .mogivi-broker-info {
+    float: left;
+    margin-top: 8px; }
+    #modalChatTab .modal-header .mogivi-broker-info h6 {
+      font-size: 14px;
+      margin-bottom: 5px; }
+    #modalChatTab .modal-header .mogivi-broker-info .last-message {
+      font-size: 12px;
+      color: #6d6d6d; }
+
+#modalChatTab #viewCreateFirstMessage #listMessageCreateFirstMessage .message-client {
+  background-color: #f4f4f6;
+  color: #000000;
+  padding: 8px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-right: 60px;
+  margin-bottom: 8px; }
+  #modalChatTab #viewCreateFirstMessage #listMessageCreateFirstMessage .message-client img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 5px;
+    border: 1px solid #ff4e00; }
+
+#modalChatTab #viewCreateFirstMessage .box-create-message {
+  bottom: 0;
+  left: 0;
+  right: 0; }
+  #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateMessage {
+    display: flex;
+    align-items: center;
+    padding: 5px; }
+    #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateMessage .input-group {
+      margin-right: 5px; }
+      #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateMessage .input-group #firstMessageValue {
+        border: 0;
+        height: 45px; }
+        #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateMessage .input-group #firstMessageValue:focus {
+          outline: none;
+          box-shadow: none; }
+    #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateMessage #btnSendFirstMessageValue {
+      display: flex;
+      align-items: center;
+      background-color: #ff4e00;
+      border-color: #ff4e00; }
+      #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateMessage #btnSendFirstMessageValue i {
+        margin-right: 5px; }
+  #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateUserInfo {
+    padding: 5px; }
+    #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateUserInfo #formCreateUserInfoUserName {
+      margin-bottom: 8px; }
+    #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateUserInfo #formCreateUserInfoPhone {
+      margin-bottom: 8px; }
+    #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateUserInfo #btnSendUserInfo {
+      display: flex;
+      align-items: center;
+      background-color: #ff4e00;
+      border-color: #ff4e00;
+      margin-bottom: 8px; }
+      #modalChatTab #viewCreateFirstMessage .box-create-message #formCreateUserInfo #btnSendUserInfo i {
+        margin-right: 5px; }
+
+#modalChatTab #viewListChat #listChat .list-group-item {
+  padding: 10px 0;
+  margin-bottom: 5px; }
+  #modalChatTab #viewListChat #listChat .list-group-item .img-avatar {
+    position: relative; }
+    #modalChatTab #viewListChat #listChat .list-group-item .img-avatar span.count-unread {
+      position: absolute;
+      right: 0px;
+      top: -5px;
+      background-color: #ff4e00;
+      color: #ffffff;
+      border-radius: 4px;
+      padding: 0px 5px; }
+    #modalChatTab #viewListChat #listChat .list-group-item .img-avatar img {
+      border-radius: 50%;
+      border: 1px solid #ff4e00;
+      height: 50px;
+      width: 50px;
+      object-fit: cover; }
+    #modalChatTab #viewListChat #listChat .list-group-item .img-avatar span.status {
+      width: 18px;
+      height: 18px;
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      border-radius: 50%;
+      border: 1px solid #fff; }
+      #modalChatTab #viewListChat #listChat .list-group-item .img-avatar span.status.offline {
+        background-color: #cccccc; }
+      #modalChatTab #viewListChat #listChat .list-group-item .img-avatar span.status.online {
+        background-color: #04be5b; }
+  #modalChatTab #viewListChat #listChat .list-group-item .mogivi-broker-info h6 {
+    font-size: 14px;
+    margin-bottom: 5px; }
+  #modalChatTab #viewListChat #listChat .list-group-item .mogivi-broker-info .last-message {
+    font-size: 12px;
+    color: #6d6d6d; }
+  #modalChatTab #viewListChat #listChat .list-group-item .message-timestamp {
+    text-align: right;
+    font-size: 12px;
+    color: #6d6d6d; }
+
+#modalChatTab #viewListMessage #listMessage {
+  overflow-y: auto;
+  height: 100%;
+  padding-bottom: 60px !important; }
+  #modalChatTab #viewListMessage #listMessage .message-client {
+    background-color: #f4f4f6;
+    color: #252525;
+    padding: 8px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    margin-right: 60px;
+    margin-bottom: 8px;
+    min-width: 90px; }
+    #modalChatTab #viewListMessage #listMessage .message-client img {
+      width: 45px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 5px;
+      border: 1px solid #ff4e00; }
+  #modalChatTab #viewListMessage #listMessage .message-without-client {
+    background-color: #dbf4fd;
+    color: #252423;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    padding: 8px;
+    margin-left: 60px;
+    margin-bottom: 8px;
+    min-width: 90px; }
+
+#modalChatTab #viewListMessage .input-list-message {
+  display: flex;
+  align-items: center;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5px;
+  background-color: #ffffff;
+  z-index: 10; }
+  #modalChatTab #viewListMessage .input-list-message .input-group {
+    margin-right: 5px; }
+    #modalChatTab #viewListMessage .input-list-message .input-group #messageValue {
+      border: 0;
+      height: 45px; }
+      #modalChatTab #viewListMessage .input-list-message .input-group #messageValue:focus {
+        outline: none;
+        box-shadow: none; }
+  #modalChatTab #viewListMessage .input-list-message #btnSendMessageValue {
+    display: flex;
+    align-items: center;
+    background-color: #ff4e00;
+    border-color: #ff4e00; }
+    #modalChatTab #viewListMessage .input-list-message #btnSendMessageValue i {
+      margin-right: 5px; }
+
+#btnShowModalChat {
+  position: fixed;
+  bottom: 80px;
+  right: 15px;
+  border: 0;
+  background-color: #ff4e00;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 24px;
+  padding: 6px 12px;
+  transition: all ease 0.3s;
+  z-index: 10; }
+  #btnShowModalChat:focus {
+    outline: none; }
+  #btnShowModalChat:hover {
+    transform: scale(1.1);
+    transition: all ease 0.3s; }
+
+#currentChat #viewCreateFirstMessageDesktop #listMessageCreateFirstMessageDesktop .message-client {
+  background-color: #f4f4f6;
+  color: #000000;
+  padding: 8px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-right: 60px;
+  margin-bottom: 8px; }
+  #currentChat #viewCreateFirstMessageDesktop #listMessageCreateFirstMessageDesktop .message-client img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 5px;
+    border: 1px solid #ff4e00; }
+
+#currentChat #viewCreateFirstMessageDesktop .box-create-message {
+  bottom: 0;
+  left: 0;
+  right: 0; }
+  #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateMessageDesktop {
+    display: flex;
+    align-items: center;
+    padding: 5px; }
+    #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateMessageDesktop .input-group {
+      margin-right: 5px; }
+      #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateMessageDesktop .input-group #firstMessageValueDesktop {
+        border: 0;
+        height: 45px; }
+        #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateMessageDesktop .input-group #firstMessageValueDesktop:focus {
+          outline: none;
+          box-shadow: none; }
+    #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateMessageDesktop #btnSendFirstMessageValueDesktop {
+      display: flex;
+      align-items: center;
+      background-color: #ff4e00;
+      border-color: #ff4e00; }
+      #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateMessageDesktop #btnSendFirstMessageValueDesktop i {
+        margin-right: 5px; }
+  #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateUserInfoDesktop {
+    padding: 5px; }
+    #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateUserInfoDesktop #formCreateUserInfoUserNameDesktop {
+      margin-bottom: 8px; }
+    #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateUserInfoDesktop #formCreateUserInfoPhoneDesktop {
+      margin-bottom: 8px; }
+    #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateUserInfoDesktop #btnSendUserInfoDesktop {
+      display: flex;
+      align-items: center;
+      background-color: #ff4e00;
+      border-color: #ff4e00;
+      margin-bottom: 8px; }
+      #currentChat #viewCreateFirstMessageDesktop .box-create-message #formCreateUserInfoDesktop #btnSendUserInfoDesktop i {
+        margin-right: 5px; }
+
+.message-timestamp span {
+  font-size: 11px;
+  color: #ffffff;
+  float: right;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 25px;
+  width: 25px;
+  background-color: #f79b6f;
+  margin-top: 25px;
+  height: 25px; }
+
+.btn-out-chat {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  text-align: center;
+  background: red;
+  border-radius: 50%;
+  color: #ffffff; }
+
+span.error {
+  margin: -0.4167rem 0 1rem;
+  color: red;
+  display: block !important;
+  clear: both;
+  text-align: left; }
+
+span.valid {
+  display: none !important; }
+
+input.error {
+  border: red solid 2px !important; }
+
+@media only screen and (max-width: 480px) {
+  .sectionUserChat {
+    display: flex;
+    justify-content: space-between; } }

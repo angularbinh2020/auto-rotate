@@ -14,46 +14,78 @@
  * limitations under the License.
  */
 "use strict";
-setTimeout(() => {
-  // Create viewer.
-  var viewer = new Marzipano.Viewer(document.getElementById("pano"));
+ // Create viewer.
+  var viewer = new Marzipano.Viewer(
+    document.querySelector(".section-image-single-demo")
+  );
 
   // Register the custom control method.
   var deviceOrientationControlMethod = new DeviceOrientationControlMethod();
   var controls = viewer.controls();
   controls.registerMethod("deviceOrientation", deviceOrientationControlMethod);
 
-  // Create source.
-  var source = Marzipano.ImageUrlSource.fromString(
-    "//www.marzipano.net/media/cubemap/{f}.jpg"
+  const defaultView = {
+    pitch: 0.0732336538048628,
+    yaw: 0.4144114484218129,
+  };
+
+  const maxFovDefault = (120 * Math.PI) / 180;
+
+  const newSource = Marzipano.ImageUrlSource.fromString(
+    `https://nhathat.azureedge.net/vrdev360/7a0b454b-8d43-481d-92e6-30057a851ca1/{f}_{x}_{y}.jpg`,
+    {
+      cubeMapPreviewUrl: `https://nhathat.azureedge.net/vrdev360/7a0b454b-8d43-481d-92e6-30057a851ca1/preview.jpg`,
+    }
   );
 
-  // Create geometry.
-  var geometry = new Marzipano.CubeGeometry([{ tileSize: 1024, size: 1024 }]);
+  const newGeometry = new Marzipano.CubeGeometry([
+    {
+      tileSize: 280,
+      size: 280,
+      fallbackOnly: true,
+    },
+    { tileSize: 840, size: 6720 / 4 },
+  ]);
 
-  // Create view.
-  var limiter = Marzipano.RectilinearView.limit.traditional(
-    1024,
-    (100 * Math.PI) / 180
+  const newLimiter = Marzipano.RectilinearView.limit.traditional(
+    6720 / 4,
+    maxFovDefault
   );
-  var view = new Marzipano.RectilinearView(null, limiter);
 
-  // Create scene.
-  var scene = viewer.createScene({
-    source: source,
-    geometry: geometry,
-    view: view,
+  const newView = new Marzipano.RectilinearView({ ...defaultView }, newLimiter);
+
+  const newScene = viewer.createScene({
+    source: newSource,
+    geometry: newGeometry,
+    view: newView,
     pinFirstLevel: true,
   });
+  /* // Create source.
+      var source = Marzipano.ImageUrlSource.fromString(
+          "//www.marzipano.net/media/cubemap/{f}.jpg"
+      );
+  
+      // Create geometry.
+      var geometry = new Marzipano.CubeGeometry([{ tileSize: 1024, size: 1024 }]);
+  
+      // Create view.
+      var limiter = Marzipano.RectilinearView.limit.traditional(1024, 100 * Math.PI / 180);
+      var view = new Marzipano.RectilinearView(null, limiter);
+  
+      // Create scene.
+      var scene = viewer.createScene({
+          source: source,
+          geometry: geometry,
+          view: view,
+          pinFirstLevel: true
+      }); */
 
   // Display scene.
-  scene.switchTo();
+  newScene.switchTo();
 
   // Set up control for enabling/disabling device orientation.
 
   var enabled = false;
-
-  var toggleElement = document.getElementById("toggleDeviceOrientation");
 
   function requestPermissionForIOS() {
     window.DeviceOrientationEvent.requestPermission()
@@ -70,12 +102,11 @@ setTimeout(() => {
   function enableDeviceOrientation() {
     deviceOrientationControlMethod.getPitch(function (err, pitch) {
       if (!err) {
-        view.setPitch(pitch);
+        newView.setPitch(pitch);
       }
     });
     controls.enableMethod("deviceOrientation");
     enabled = true;
-    toggleElement.className = "enabled";
   }
 
   function enable() {
@@ -93,7 +124,6 @@ setTimeout(() => {
   function disable() {
     controls.disableMethod("deviceOrientation");
     enabled = false;
-    toggleElement.className = "";
   }
 
   function toggle() {
@@ -104,5 +134,4 @@ setTimeout(() => {
     }
   }
 
-  toggleElement.addEventListener("click", toggle);
-}, 500);
+  toggle();

@@ -1,0 +1,179 @@
+﻿function goToView(sectionName, thisElement) {
+    // Scroll
+    $('html,body').animate({
+        scrollTop: $("#" + sectionName).offset().top - 100
+    }, 'slow');
+
+    $('#sectionMenuHeader ul li').removeClass('active');
+    $(thisElement).parent().addClass('active');
+
+    $("#" + sectionName).find(".collapse").collapse('show');
+}
+
+$(document).ready(function () {
+    //--- Scroll to fix nav
+    $(window).scroll(function () {
+        var scrollTop = $(this).scrollTop();
+
+        if (scrollTop >= 100) {
+            $("#sectionNav").addClass("fixed-top");
+        } else {
+            $("#sectionNav").removeClass("fixed-top");
+        }
+    });
+
+    //--- Click to contact
+    $("#menuContact").click(function () {
+        $('html, body').animate({
+            scrollTop: $("#footer").offset().top - 50
+        }, 1000);
+    });
+
+    $("#mMenuContact").click(function () {
+        $(mNavigation).removeClass("open");
+        $(overlay).removeClass("open");
+        $('body').removeClass("overflow-hidden");
+
+        $('html, body').animate({
+            scrollTop: $("#footer").offset().top
+        }, 1000);
+    });
+
+    //--- Menu mobile
+    var mMenuBar = $(".m-menu-bar");
+    var mNavigation = $(".m-navigation");
+    var overlay = $(".m-overlay");
+    var closeMenu = $(".m-navigation .fa-times");
+
+    $(mMenuBar).click(function () {
+        $(mNavigation).addClass("open");
+        $(overlay).addClass("open");
+        $('body').addClass("overflow-hidden");
+    });
+
+    $(closeMenu).click(function () {
+        $(mNavigation).removeClass("open");
+        $(overlay).removeClass("open");
+        $('body').removeClass("overflow-hidden");
+    });
+
+    $(overlay).click(function () {
+        $(mNavigation).removeClass("open");
+        $(this).removeClass("open");
+        $('body').removeClass("overflow-hidden");
+    });
+
+
+    $('.other-project').slick({
+        infinite: false,
+        slidesToShow: 4,
+        slidesToScroll: 4,
+        dots: true,
+        speed: 300,
+        arrows: true,
+        autoplay: true,
+        autoplaySpeed: 10000,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    arrows: false,
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                    arrows: false,
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                }
+            }
+        ]
+    });
+
+
+    //--- Click intro view more
+    var introViewMore = $(".intro-view-more");
+
+    introViewMore.click(function () {
+        var introContent = $(".intro-content");
+        if (introContent.hasClass("active")) {
+            introContent.removeClass("active");
+            introViewMore.removeClass("active");
+            introViewMore.find("span").text("Xem thêm");
+
+            //--- Scroll
+            $('html,body').animate({
+                scrollTop: $("#sectionIntro").offset().top - 50
+            }, 'slow');
+        } else {
+            introContent.addClass("active");
+            introViewMore.addClass("active");
+            introViewMore.find("span").text("Thu gọn");
+        }
+    });
+
+    //--- Validation.js
+    validation.init();
+
+    //--- Chatbox
+    var chatbox = $(".chatbox");
+    var chatboxPopup = $(".chatbox-popup");
+
+    chatbox.click(function () {
+       // $('#commingSoonModal').modal('show');
+
+        console.log("-------------------------;", $("#ReciverChatId").val())
+        console.log("-------------------------;", $("#ReciverChatName").val())
+        console.log("-------------------------;", $("#ReciverChatAvatar").val())
+        console.log("-------------------------;", $("#ReciverChatEmail").val())
+        let UserId = $("#ReciverChatId").val();
+        let FullName = $("#ReciverChatName").val();
+        let Photo = $("#ReciverChatAvatar").val();
+        let Email = $("#ReciverChatEmail").val();
+        let PhoneNumber = $("#ReciverChatPhone").val();
+        $("#clientUserRedisId").val("");
+        $("#clientUserChatId").val(UserId);
+        $("#clientUserChatName").val(FullName);
+        $("#clientUserChatEmail").val(Email);
+        $("#clientUserChatPhoneNumber").val(PhoneNumber);
+        $("#clientUserChatAvatar").val(Photo);
+        $("#clientUserOnline").val(true);
+
+        onCreateOrOpenMessage();
+
+        //if (chatboxPopup.hasClass("d-none")) {
+        //    chatboxPopup.removeClass("d-none");
+        //} else {
+        //    chatboxPopup.addClass("d-none");
+        //}
+    });
+
+    chatboxPopup.find("i").click(function () {
+        $(".chatbox-popup").addClass("d-none");
+
+        $("#chatBoxForm #name").val('');
+        $("#chatBoxForm #phone").val('');
+    });
+
+    $("#chatBoxForm").submit(function (e) {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+
+        var $form = $(this);
+
+        if ($form.valid()) {
+            console.log("OK")
+        }
+    })
+})

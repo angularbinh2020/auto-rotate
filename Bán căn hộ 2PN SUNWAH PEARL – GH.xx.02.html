@@ -84,7 +84,7 @@
 
     appInsights.trackPageView();
   </script>
-  <!-- <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/ai.0.js.tải xuống"></script> -->
+  <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/ai.0.js.tải xuống"></script>
 
   <meta name="description"
     content="Sản phẩm căn hộ dự án - Sunwah Pearl: 2 PN - 2 PT - Diện tích: 101 m² - 90 Nguyễn Hữu Cảnh, Phường 22, Quận Bình Thạnh, TP. Hồ Chí Minh.">
@@ -535,11 +535,17 @@
 
         <div class="col-12 col-md-12 col-lg-7">
           <section id="sectionImages">
-            <div class="slider slider-single slick-initialized slick-slider" >
+            <div class="slider slider-single slick-initialized slick-slider" data-bind="foreach: news().Files">
               <div class="slick-list draggable" style="height: 356px;">
                 <div class="slick-track" style="opacity: 1; width: 635px; transform: translate3d(0px, 0px, 0px);">
-                  <div class="slick-slide slick-current slick-active section-image-single-demo"
-                    style="width: 100%; height:350px; position: relative; background-color: #ff4e00;">
+                  <div class="slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false"
+                    style="width: 635px;">
+                    <div>
+                      <div style="width: 100%; display: inline-block;">
+                        <div class="section-image-single" style="width: 100%; height:350px; position: relative; background-color: #ff4e00;">
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1694,7 +1700,6 @@
 
 
 
-  /*
   <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/jquery-ui.min.js.tải xuống" defer=""></script>
   <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/jquery.validate.min.js.tải xuống" defer=""></script>
   <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/slick.js.tải xuống" defer=""></script>
@@ -1789,7 +1794,7 @@
 
 
   <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/jquery.ez-plus.js.tải xuống"></script>
-  <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/apartment-zoom-image.js.tải xuống"></script> */
+  <script src="./Bán căn hộ 2PN SUNWAH PEARL – GH.xx.02_files/apartment-zoom-image.js.tải xuống"></script>
   <script src="./js/marzipano.js"></script>
 
   <script src="DeviceOrientationControlMethod.js"></script>

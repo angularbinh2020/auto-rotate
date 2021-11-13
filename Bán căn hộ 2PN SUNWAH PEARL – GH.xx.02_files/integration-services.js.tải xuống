@@ -1,0 +1,164 @@
+﻿var commonMogivi = {
+    APIs: {
+        get: function(url, callback, errorCallback) {
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    "accept": "application/json;odata=verbose"
+                },
+                success: function(data) {
+                    if (typeof (callback) == "function") {
+                        callback(data);
+                    }
+                },
+                error: function(error) {
+                    if (typeof (errorCallback) == "function") {
+                        errorCallback(error);
+                    }
+                    console.log(JSON.stringify(error));
+                }
+            });
+        },
+        getParallelRequests: function(urls, callback) {
+            var deferreds = [];
+            var results = {};
+            for (var i = 0; i < urls.length; i++) {
+                var url = urls[i].url;
+                var requestUri = $.ajax({
+                    url: url,
+                    method: "GET",
+                    contentType: "application/json",
+                    headers: {
+                        accept: "application/json;odata=verbose"
+                    },
+                    success: function(data) {
+                        //console.log('url:'+url);
+                        //results[key] = data;
+                        var requestUrl = this.url;
+                        var key = urls.filter(function(x) {
+                            return x.url === requestUrl;
+                        })[0].key;
+                        results[key] = data;
+                    }
+                });
+                deferreds.push(requestUri);
+            }
+            $.when.apply(undefined, deferreds).then(function() { callback(results) });
+        },
+        post: function(data, url, callback, errorCallback) {
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: JSON.stringify(data),
+                headers: {
+                    "accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                },
+                success: function(data) {
+                    callback(data);
+                },
+                error: function(error) {
+                    errorCallback(error);
+                    console.log("Error: " + JSON.stringify(error));
+                }
+            });
+        },
+        submitFormData: function(formData, url, callback, errorCallback) {
+            $.ajax({
+                url: url,
+                data: formData,
+                type: 'POST',
+                contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                processData: false, // NEEDED, DON'T OMIT THIS
+                success: function(data) {
+                    callback(data);
+                },
+                error: function(e) {
+                    errorCallback(e);
+                }
+            });
+        }
+    },
+    Utility: {
+        CompareString: function(a, b) {
+            return a !== null && b !== null && a.trim().toLowerCase() === b.trim().toLowerCase();
+        },
+        IsnullOrWhiteSpace: function(a) {
+            return a === null || typeof a === "undefined" || (typeof a === "string" && a.trim() === '');
+        },
+        IsNumberPercentRequired: function(a) {
+            var self = this;
+            if (self.IsnullOrWhiteSpace(a))
+                return false;
+            if (isNaN(a))
+                return false;
+            if (parseFloat(a) <= 0 || parseFloat(a) > 100)
+                return false;
+            return true;
+        },
+        IsInteger: function(a) {
+            var self = this;
+            if (self.IsnullOrWhiteSpace(a))
+                return false;
+            if (isNaN(a))
+                return false;
+            return parseFloat(a) === parseInt(a);
+        },
+        getCookie: function(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) === 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        },
+        getParameterByName: function(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        },
+        changeQueryString:function (searchString, documentTitle){
+            documentTitle = typeof documentTitle !== 'undefined' ? documentTitle : document.title;
+            var urlSplit = (window.location.href).split("?");
+            var obj = { Title: documentTitle, Url: urlSplit[0] + searchString };
+            history.pushState(obj, obj.Title, obj.Url);      
+        }
+    },
+    ApiUrls: {
+        ApartmentPostUrl: '/umbraco/api/MogiviNewsApi/GetApartmentPost',
+        GetReleatedApartmentPostsUrl: '/umbraco/api/MogiviNewsApi/GetReleatedApartmentPosts',
+        GetCitiesUrl: '/umbraco/api/MogiviNewsApi/GetAddressByType',
+        GetAddressFromParentIdUrl: '/umbraco/api/MogiviNewsApi/GetAddressFromParentId',
+        GetPricesRangeUrl: '/umbraco/api/MogiviNewsApi/GetPricesRange',
+        GetAcreagesRangeUrl: '/umbraco/api/MogiviNewsApi/GetAcreagesRange',
+        GetNewsTypeUrl: '/umbraco/api/MogiviNewsApi/GetNewsType',
+        GetBathRoomsUrl: '/umbraco/api/MogiviNewsApi/GetBathRooms',
+        GetSubTypeApartmentsUrl: '/umbraco/api/MogiviNewsApi/GetSubTypeApartments',
+        GetDirectionHouseUrl: '/umbraco/api/MogiviNewsApi/GetDirectionHouse',
+        GetBedRoomsUrl: '/umbraco/api/MogiviNewsApi/GetBedRooms',
+        GetApartmentListUrl: '/umbraco/api/MogiviNewsApi/GetApartmentList',
+        GetMogiviNewsFacetUrl: '/umbraco/api/MogiviNewsApi/GetMogiviNewsFacet',
+        GetMogiviNewsTrendingUrl: '/umbraco/api/MogiviNewsApi/GetMogiviNewsTrending',
+        CountMogiviNewsUrl: '/umbraco/api/MogiviNewsApi/CountMogiviNews',
+    },
+    Constants: {
+     
+    },
+    AddressTypes: {
+        CityOrProvince: 48790,
+        District: 48797,
+        WardOrCommune: 48798,
+        Road : 48803
+    }
+};
