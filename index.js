@@ -133,14 +133,25 @@ function toggle() {
 }
 
 document.getElementById("enableRotate").addEventListener("click", () => {
-  window.DeviceOrientationEvent.requestPermission()
-    .then((response) => {
-      if (response === "granted") {
-        enableDeviceOrientation();
-      }
-    })
-    .catch((e) => {
-      console.error(e);
-    });
-  // enable();
+  if (window.DeviceOrientationEvent) {
+    if (typeof window.DeviceOrientationEvent.requestPermission == "function") {
+      window.DeviceOrientationEvent.requestPermission()
+        .then((response) => {
+          if (response === "granted") {
+            enableDeviceOrientation();
+            alert("Permission DeviceOrientationEvent success");
+          } else {
+            alert("Permission DeviceOrientationEvent fail");
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          alert(JSON.stringify(e));
+        });
+    } else {
+      enableDeviceOrientation();
+    }
+  } else {
+    alert("DeviceOrientationEvent missing");
+  }
 });
