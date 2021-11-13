@@ -14,53 +14,53 @@
  * limitations under the License.
  */
 "use strict";
- // Create viewer.
-  var viewer = new Marzipano.Viewer(
-    document.querySelector(".section-image-single-demo")
-  );
+// Create viewer.
+var viewer = new Marzipano.Viewer(
+  document.querySelector(".section-image-single-demo")
+);
 
-  // Register the custom control method.
-  var deviceOrientationControlMethod = new DeviceOrientationControlMethod();
-  var controls = viewer.controls();
-  controls.registerMethod("deviceOrientation", deviceOrientationControlMethod);
+// Register the custom control method.
+var deviceOrientationControlMethod = new DeviceOrientationControlMethod();
+var controls = viewer.controls();
+controls.registerMethod("deviceOrientation", deviceOrientationControlMethod);
 
-  const defaultView = {
-    pitch: 0.0732336538048628,
-    yaw: 0.4144114484218129,
-  };
+const defaultView = {
+  pitch: 0.0732336538048628,
+  yaw: 0.4144114484218129,
+};
 
-  const maxFovDefault = (120 * Math.PI) / 180;
+const maxFovDefault = (120 * Math.PI) / 180;
 
-  const newSource = Marzipano.ImageUrlSource.fromString(
-    `https://nhathat.azureedge.net/vrdev360/7a0b454b-8d43-481d-92e6-30057a851ca1/{f}_{x}_{y}.jpg`,
-    {
-      cubeMapPreviewUrl: `https://nhathat.azureedge.net/vrdev360/7a0b454b-8d43-481d-92e6-30057a851ca1/preview.jpg`,
-    }
-  );
+const newSource = Marzipano.ImageUrlSource.fromString(
+  `https://nhathat.azureedge.net/vrdev360/7a0b454b-8d43-481d-92e6-30057a851ca1/{f}_{x}_{y}.jpg`,
+  {
+    cubeMapPreviewUrl: `https://nhathat.azureedge.net/vrdev360/7a0b454b-8d43-481d-92e6-30057a851ca1/preview.jpg`,
+  }
+);
 
-  const newGeometry = new Marzipano.CubeGeometry([
-    {
-      tileSize: 280,
-      size: 280,
-      fallbackOnly: true,
-    },
-    { tileSize: 840, size: 6720 / 4 },
-  ]);
+const newGeometry = new Marzipano.CubeGeometry([
+  {
+    tileSize: 280,
+    size: 280,
+    fallbackOnly: true,
+  },
+  { tileSize: 840, size: 6720 / 4 },
+]);
 
-  const newLimiter = Marzipano.RectilinearView.limit.traditional(
-    6720 / 4,
-    maxFovDefault
-  );
+const newLimiter = Marzipano.RectilinearView.limit.traditional(
+  6720 / 4,
+  maxFovDefault
+);
 
-  const newView = new Marzipano.RectilinearView({ ...defaultView }, newLimiter);
+const newView = new Marzipano.RectilinearView({ ...defaultView }, newLimiter);
 
-  const newScene = viewer.createScene({
-    source: newSource,
-    geometry: newGeometry,
-    view: newView,
-    pinFirstLevel: true,
-  });
-  /* // Create source.
+const newScene = viewer.createScene({
+  source: newSource,
+  geometry: newGeometry,
+  view: newView,
+  pinFirstLevel: true,
+});
+/* // Create source.
       var source = Marzipano.ImageUrlSource.fromString(
           "//www.marzipano.net/media/cubemap/{f}.jpg"
       );
@@ -80,58 +80,56 @@
           pinFirstLevel: true
       }); */
 
-  // Display scene.
-  newScene.switchTo();
+// Display scene.
+newScene.switchTo();
 
-  // Set up control for enabling/disabling device orientation.
+// Set up control for enabling/disabling device orientation.
 
-  var enabled = false;
+var enabled = false;
 
-  function requestPermissionForIOS() {
-    window.DeviceOrientationEvent.requestPermission()
-      .then((response) => {
-        if (response === "granted") {
-          enableDeviceOrientation();
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  }
-
-  function enableDeviceOrientation() {
-    deviceOrientationControlMethod.getPitch(function (err, pitch) {
-      if (!err) {
-        newView.setPitch(pitch);
-      }
-    });
-    controls.enableMethod("deviceOrientation");
-    enabled = true;
-  }
-
-  function enable() {
-    if (window.DeviceOrientationEvent) {
-      if (
-        typeof window.DeviceOrientationEvent.requestPermission == "function"
-      ) {
-        requestPermissionForIOS();
-      } else {
+function requestPermissionForIOS() {
+  window.DeviceOrientationEvent.requestPermission()
+    .then((response) => {
+      if (response === "granted") {
         enableDeviceOrientation();
       }
+    })
+    .catch((e) => {
+      console.error(e);
+    });
+}
+
+function enableDeviceOrientation() {
+  deviceOrientationControlMethod.getPitch(function (err, pitch) {
+    if (!err) {
+      newView.setPitch(pitch);
     }
-  }
+  });
+  controls.enableMethod("deviceOrientation");
+  enabled = true;
+}
 
-  function disable() {
-    controls.disableMethod("deviceOrientation");
-    enabled = false;
-  }
-
-  function toggle() {
-    if (enabled) {
-      disable();
+function enable() {
+  if (window.DeviceOrientationEvent) {
+    if (typeof window.DeviceOrientationEvent.requestPermission == "function") {
+      requestPermissionForIOS();
     } else {
-      enable();
+      enableDeviceOrientation();
     }
   }
+}
 
-  toggle();
+function disable() {
+  controls.disableMethod("deviceOrientation");
+  enabled = false;
+}
+
+function toggle() {
+  if (enabled) {
+    disable();
+  } else {
+    enable();
+  }
+}
+
+document.getElementById("enableRotate").addEventListener("click", enable);
