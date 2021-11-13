@@ -112,7 +112,7 @@ function enableDeviceOrientation() {
 function enable() {
   if (window.DeviceOrientationEvent) {
     if (typeof window.DeviceOrientationEvent.requestPermission == "function") {
-      requestPermissionForIOS();
+      // requestPermissionForIOS();
     } else {
       enableDeviceOrientation();
     }
@@ -132,4 +132,15 @@ function toggle() {
   }
 }
 
-document.getElementById("enableRotate").addEventListener("click", enable);
+document.getElementById("enableRotate").addEventListener("click", () => {
+  window.DeviceOrientationEvent.requestPermission()
+    .then((response) => {
+      if (response === "granted") {
+        enableDeviceOrientation();
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+    });
+  enable();
+});
