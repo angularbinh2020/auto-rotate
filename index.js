@@ -152,6 +152,6 @@ document.getElementById("enableRotate").addEventListener("click", () => {
   }
 });
 
-// document.getElementById("enableRotate").click()
+document.getElementById("enableRotate").click()
 
-enable();
+// enable();
